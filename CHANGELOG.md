@@ -1,3 +1,10 @@
+# [0.1.0](https://github.com/armandocerna/terraform-provider-awx/compare/v0.0.39...v0.1.0) (2024-03-13)
+
+
+### Features
+
+* force build ([ddda3be](https://github.com/armandocerna/terraform-provider-awx/commit/ddda3be66af63368467243e18250fbac652532f0))
+
 ## [0.24.3](https://github.com/denouche/terraform-provider-awx/compare/v0.24.2...v0.24.3) (2023-11-23)
 
 
