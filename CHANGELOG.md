@@ -1,3 +1,10 @@
+## [0.1.1](https://github.com/armandocerna/terraform-provider-awx/compare/v0.1.0...v0.1.1) (2024-03-13)
+
+
+### Bug Fixes
+
+* rename module and fix references ([24ef449](https://github.com/armandocerna/terraform-provider-awx/commit/24ef44953cf0516ffd03523e43b8bdd5927fb172))
+
 # [0.1.0](https://github.com/armandocerna/terraform-provider-awx/compare/v0.0.39...v0.1.0) (2024-03-13)
 
 
