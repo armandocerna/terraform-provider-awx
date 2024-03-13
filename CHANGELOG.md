@@ -1,3 +1,10 @@
+## [0.1.2](https://github.com/armandocerna/terraform-provider-awx/compare/v0.1.1...v0.1.2) (2024-03-13)
+
+
+### Bug Fixes
+
+* project_id is not a thing ([605d30b](https://github.com/armandocerna/terraform-provider-awx/commit/605d30b0c024fba1bbe0e6964d0a4de0bffb0065))
+
 ## [0.1.1](https://github.com/armandocerna/terraform-provider-awx/compare/v0.1.0...v0.1.1) (2024-03-13)
 
 
