@@ -1,24 +1,25 @@
 /*
 *TBD*
 
-Example Usage
+# Example Usage
 
 ```hcl
-data "awx_inventory" "default" {
-  name            = "private_services"
-  organization_id = data.awx_organization.default.id
-}
 
-resource "awx_job_template" "baseconfig" {
-  name           = "baseconfig"
-  job_type       = "run"
-  inventory_id   = data.awx_inventory.default.id
-  project_id     = awx_project.base_service_config.id
-  playbook       = "master-configure-system.yml"
-  become_enabled = true
-}
+	data "awx_inventory" "default" {
+		name            = "private_services"
+		organisation_id = data.awx_organization.default.id
+	}
+
+	resource "awx_job_template" "baseconfig" {
+		name           = "baseconfig"
+		job_type       = "run"
+		inventory_id   = data.awx_inventory.default.id
+		project_id     = awx_project.base_service_config.id
+		playbook       = "master-configure-system.yml"
+		become_enabled = true
+	}
+
 ```
-
 */
 package awx
 
@@ -27,6 +28,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
 	awx "github.com/denouche/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -90,6 +92,13 @@ func resourceJobTemplate() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "",
+				DiffSuppressFunc: func(k, oldValue, newValue string, d *schema.ResourceData) bool {
+					if strings.TrimSpace(oldValue) == strings.TrimSpace(newValue) {
+						return true
+					}
+
+					return false
+				},
 			},
 			"job_tags": {
 				Type:     schema.TypeString,
@@ -201,6 +210,14 @@ func resourceJobTemplate() *schema.Resource {
 				Optional: true,
 				Default:  "",
 			},
+			"job_slice_count": &schema.Schema{
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  1,
+			},
+		},
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 	}
 }
