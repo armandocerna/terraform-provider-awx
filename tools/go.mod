@@ -1,9 +1,9 @@
-module github.com/denouche/terraform-provider-awx/tools
+module github.com/armandocerna/terraform-provider-awx/tools
 
 go 1.20
 
 require (
-	github.com/denouche/terraform-provider-awx v0.1.2
+	github.com/armandocerna/terraform-provider-awx v0.1.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.30.0
 	github.com/magefile/mage v1.11.0
 	github.com/nolte/plumbing v0.0.1
@@ -43,4 +43,4 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-replace github.com/denouche/terraform-provider-awx => ../.
+replace github.com/armandocerna/terraform-provider-awx => ../.
