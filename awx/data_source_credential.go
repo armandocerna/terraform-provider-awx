@@ -19,49 +19,65 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceCredentialByID() *schema.Resource {
+func dataSourceCredentialByName() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceCredentialByIDRead,
+		ReadContext: dataSourceCredentialsRead,
 		Schema: map[string]*schema.Schema{
-			"id": {
+			"id": &schema.Schema{
 				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
+			},
+			"name": &schema.Schema{
+				Type:     schema.TypeString,
 				Required: true,
+				Computed: false,
 			},
-			"tower_id": {
-				Type:     schema.TypeInt,
-				Computed: true,
-			},
-			"username": {
+			"kind": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"kind": {
-				Type:     schema.TypeString,
+				Optional: true,
 				Computed: true,
 			},
 		},
 	}
 }
 
-func dataSourceCredentialByIDRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceCredentialsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
 	client := m.(*awx.AWX)
-	id := d.Get("id").(int)
-	cred, err := client.CredentialsService.GetCredentialsByID(id, map[string]string{})
-	if err != nil {
-		diags = append(diags, diag.Diagnostic{
-			Severity: diag.Error,
-			Summary:  "Unable to fetch credential",
-			Detail:   "The given credential ID is invalid or malformed",
-		})
+	params := make(map[string]string)
+
+	if name, okName := d.GetOk("name"); okName {
+		params["name"] = name.(string)
 	}
 
-	d.Set("username", cred.Inputs["username"])
-	d.Set("kind", cred.Kind)
-	d.Set("tower_id", id)
-	d.SetId(strconv.Itoa(id))
-	// d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
+	if len(params) == 0 {
+		return buildDiagnosticsMessage(
+			"Get: Missing Parameters",
+			"Please use the selector: (name)")
+	}
 
-	return diags
+	credentials, err := client.CredentialsService.ListCredentials(map[string]string{})
+
+	if err != nil {
+		return buildDiagnosticsMessage(
+			"Get: Fail to fetch Credential list",
+			"Fail to find the Credential list, got: %s",
+			err)
+	}
+
+	for _, credential := range credentials {
+		if credential.Name == params["name"] {
+			d.SetId(strconv.Itoa(credential.ID))
+			d.Set("name", credential.Name)
+			d.Set("kind", credential.Kind)
+			return diags
+		}
+	}
+
+	return buildDiagnosticsMessage(
+		"Credential not found",
+		"Could not find Credential with name: %s",
+		params["name"])
 }

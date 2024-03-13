@@ -1,39 +1,26 @@
-/*
-*TBD*
-
-Example Usage
-
-```hcl
-data "awx_execution_environment" "default" {
-  name = "Default"
-}
-```
-
-*/
 package awx
 
 import (
 	"context"
-	"strconv"
-
-	awx "github.com/denouche/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	awx "github.com/mrcrilly/goawx/client"
+	"strconv"
 )
 
-func dataSourceExecutionEnvironment() *schema.Resource {
+func dataSourceExecutionEnvironmentByName() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceExecutionEnvironmentsRead,
 		Schema: map[string]*schema.Schema{
-			"id": {
+			"id": &schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
 			},
-			"name": {
+			"name": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
+				Computed: false,
 			},
 		},
 	}
@@ -41,46 +28,39 @@ func dataSourceExecutionEnvironment() *schema.Resource {
 
 func dataSourceExecutionEnvironmentsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
+
 	client := m.(*awx.AWX)
 	params := make(map[string]string)
-	if groupName, okName := d.GetOk("name"); okName {
-		params["name"] = groupName.(string)
-	}
 
-	if groupID, okGroupID := d.GetOk("id"); okGroupID {
-		params["id"] = strconv.Itoa(groupID.(int))
+	if name, okName := d.GetOk("name"); okName {
+		params["name"] = name.(string)
 	}
 
 	if len(params) == 0 {
 		return buildDiagnosticsMessage(
 			"Get: Missing Parameters",
-			"Please use one of the selectors (name or group_id)",
-		)
-	}
-	executionEnvironments, _, err := client.ExecutionEnvironmentsService.ListExecutionEnvironments(params)
-	if err != nil {
-		return buildDiagnosticsMessage(
-			"Get: Fail to fetch execution environment",
-			"Fail to find the execution environment got: %s",
-			err.Error(),
-		)
-	}
-	if len(executionEnvironments) > 1 {
-		return buildDiagnosticsMessage(
-			"Get: find more than one element",
-			"The query returns more than one execution environment, %d",
-			len(executionEnvironments),
-		)
-	}
-	if len(executionEnvironments) == 0 {
-		return buildDiagnosticsMessage(
-			"Get: Execution Environment does not exist",
-			"The Query Returns no Execution Environment matching filter %v",
-			params,
-		)
+			"Please use the selector: (name)")
 	}
 
-	executionEnvironment := executionEnvironments[0]
-	d = setExecutionEnvironmentsResourceData(d, executionEnvironment)
-	return diags
+	executionEnvironments, _, err := client.ExecutionEnvironmentsService.ListExecutionEnvironments(map[string]string{})
+
+	if err != nil {
+		return buildDiagnosticsMessage(
+			"Get: Fail to fetch Execution Environment list",
+			"Fail to find the Execution Environment list, got: %s",
+			err)
+	}
+
+	for _, executionEnvironment := range executionEnvironments {
+		if executionEnvironment.Name == params["name"] {
+			d.SetId(strconv.Itoa(executionEnvironment.ID))
+			d.Set("name", executionEnvironment.Name)
+			return diags
+		}
+	}
+
+	return buildDiagnosticsMessage(
+		"Execution Environment not found",
+		"Could not find Execution Environment with name: %s",
+		params["name"])
 }
