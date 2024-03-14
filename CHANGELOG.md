@@ -1,3 +1,10 @@
+## [0.1.4](https://github.com/armandocerna/terraform-provider-awx/compare/v0.1.3...v0.1.4) (2024-03-14)
+
+
+### Bug Fixes
+
+* deafult to  ee that exists ([a4e9f9c](https://github.com/armandocerna/terraform-provider-awx/commit/a4e9f9c688520f3f55bfd3eef88ccb778c5f28ce))
+
 ## [0.1.3](https://github.com/armandocerna/terraform-provider-awx/compare/v0.1.2...v0.1.3) (2024-03-14)
 
 
