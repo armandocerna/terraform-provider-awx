@@ -1,3 +1,10 @@
+## [0.1.3](https://github.com/armandocerna/terraform-provider-awx/compare/v0.1.2...v0.1.3) (2024-03-14)
+
+
+### Bug Fixes
+
+* force build ([3834c73](https://github.com/armandocerna/terraform-provider-awx/commit/3834c73ac7b4045476213cad6101d124a9fb29b2))
+
 ## [0.1.2](https://github.com/armandocerna/terraform-provider-awx/compare/v0.1.1...v0.1.2) (2024-03-13)
 
 
