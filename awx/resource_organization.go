@@ -55,7 +55,7 @@ func resourceOrganization() *schema.Resource {
 			"default_environment": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Default:     0,
+				Default:     1,
 				Description: "The default execution environment for jobs run by this organization.",
 			},
 		},
